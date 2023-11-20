@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1,
+    "title": "Home",
+    "url": "https://example.com/",
+    "tags": ["Home", "Welcome", "Featured"],
+    "icon": "home"
+  },
+  {
+    "id": 2,
+    "title": "About Us",
+    "url": "https://example.com/about",
+    "tags": ["About", "Company", "History"],
+    "icon": "info"
+  },
+  {
+    "id": 3,
+    "title": "Products",
+    "url": "https://example.com/products",
+    "tags": ["Products", "Catalog", "Shopping"],
+    "icon": "shopping_cart"
+  },
+  {
+    "id": 4,
+    "title": "Contact",
+    "url": "https://example.com/contact",
+    "tags": ["Contact", "Support", "Get in Touch"],
+    "icon": "mail"
+  },
+  {
+    "id": 5,
+    "title": "Blog",
+    "url": "https://example.com/blog",
+    "tags": ["Blog", "Articles", "News"],
+    "icon": "article"
+  },
+  {
+    "id": 6,
+    "title": "FAQ",
+    "url": "https://example.com/faq",
+    "tags": ["FAQ", "Help", "Questions"],
+    "icon": "help_outline"
+  },
+  {
+    "id": 7,
+    "title": "Services",
+    "url": "https://example.com/services",
+    "tags": ["Services", "Offerings", "Solutions"],
+    "icon": "build"
+  },
+  {
+    "id": 8,
+    "title": "Portfolio",
+    "url": "https://example.com/portfolio",
+    "tags": ["Portfolio", "Projects", "Work"],
+    "icon": "work"
+  },
+  {
+    "id": 9,
+    "title": "Testimonials",
+    "url": "https://example.com/testimonials",
+    "tags": ["Testimonials", "Reviews", "Feedback"],
+    "icon": "thumbs_up_down"
+  },
+  {
+    "id": 10,
+    "title": "Events",
+    "url": "https://example.com/events",
+    "tags": ["Events", "Calendar", "Schedule"],
+    "icon": "event"
+  },
+  {
+    "id": 11,
+    "title": "Partners",
+    "url": "https://example.com/partners",
+    "tags": ["Partners", "Collaborations", "Alliances"],
+    "icon": "people"
+  },
+  {
+    "id": 12,
+    "title": "Press",
+    "url": "https://example.com/press",
+    "tags": ["Press", "Media", "Publications"],
+    "icon": "public"
+  },
+  {
+    "id": 13,
+    "title": "Careers",
+    "url": "https://example.com/careers",
+    "tags": ["Careers", "Jobs", "Opportunities"],
+    "icon": "work_outline"
+  },
+  {
+    "id": 14,
+    "title": "Downloads",
+    "url": "https://example.com/downloads",
+    "tags": ["Downloads", "Resources", "Files"],
+    "icon": "cloud_download"
+  },
+  {
+    "id": 15,
+    "title": "Community",
+    "url": "https://example.com/community",
+    "tags": ["Community", "Forums", "Discussion"],
+    "icon": "forum"
+  }
+]

@@ -1,0 +1,58 @@
+.cmdkContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  background-color: rgba(var(--callout-rgb));
+  border: 1px solid rgba(var(--callout-border-rgb), 0.3);
+  border-radius: var(--border-radius);
+  transition: all 1s ease-in-out;
+  overflow: hidden;
+  max-height: 55vh;
+}
+
+.cmdkContainer > section {
+  width: 100%;
+  padding: 1rem;
+  overflow: auto;
+  transition: all 1s ease-in-out;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(var(--callout-border-rgb), 0.3);
+  width: 100%;
+  padding: 1rem;
+}
+
+.searchContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.searchContainer > input {
+  flex: 1;
+  font-size: 1rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  background-color: rgba(var(--callout-rgb), 0.5);
+  cursor: pointer;
+}
+
+.itemSelected {
+  background-color: rgba(var(--foreground-rgb), 0.2);
+}

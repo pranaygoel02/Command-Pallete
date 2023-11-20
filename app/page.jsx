@@ -1,11 +1,14 @@
 import Image from 'next/image'
 import styles from './page.module.css'
+import Search from '@/components/cmdk/Search';
+
 
 export default function Home() {
+  console.log('styles', styles);
   return (
     <main className={styles.main}>
       <div className={styles.description}>
-        <p>
+        <p className={styles.box}>
           Get started by editing&nbsp;
           <code className={styles.code}>app/page.js</code>
         </p>
@@ -37,6 +40,7 @@ export default function Home() {
           height={37}
           priority
         />
+        <Search styles={styles} />
       </div>
 
       <div className={styles.grid}>

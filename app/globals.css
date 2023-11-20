@@ -100,8 +100,34 @@ a {
   text-decoration: none;
 }
 
+li {
+  list-style: none;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+
+input {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
   }
 }

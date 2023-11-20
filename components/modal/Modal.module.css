@@ -1,0 +1,25 @@
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+}
+
+.modalContainer {
+  overflow: auto;
+  position: relative;
+  top: 17vh;
+  min-width: 40vw;
+  scroll-margin-bottom: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+  .modalContainer {
+    min-width: 50vw;
+  } 
+}
