@@ -30,12 +30,14 @@ function CMDK() {
             onChange={handleSearch}
             autoFocus={true}
             placeholder="Search..."
+            autoComplete="off"
             className={styles.cmdkInput}
           />
           <span className={styles.esc}>ESC</span>
         </div>
         <section
           onMouseMove={handleItemSelection}
+          style={{ height: `${Math.max(filteredData.length * 52 + 32, 60)}px` }}
         >
           <CMDKList
             data={filteredData}

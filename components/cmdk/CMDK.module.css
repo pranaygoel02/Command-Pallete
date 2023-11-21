@@ -7,16 +7,16 @@
   background-color: rgba(var(--callout-rgb));
   border: 1px solid rgba(var(--callout-border-rgb), 0.3);
   border-radius: var(--border-radius);
-  transition: all 1s ease-in-out;
+  transition: height 1s ease-in-out;
   overflow: hidden;
-  max-height: 55vh;
 }
 
-.cmdkContainer > section {
+.cmdkContainer section {
   width: 100%;
   padding: 1rem;
   overflow: auto;
-  transition: all 1s ease-in-out;
+  transition: height 0.3s ease-in-out;
+  max-height: 50vh;
 }
 
 .searchContainer {
@@ -41,6 +41,8 @@
 .list {
   display: flex;
   flex-direction: column;
+  max-height: 55vh;
+  transition: max-height 1s ease-in-out;
 }
 
 .item {
