@@ -8,28 +8,32 @@ import {
   useMemo,
   useState,
 } from "react";
-import cmdkData from "@/lib/cmdkData.json";
+import cmdkData from "@/lib/cmdkData";
+import fuzzy_match from "@/lib/fuzzy";
 
 const CMDKContext = createContext();
 
 export function CMDKProvider({ children }) {
-  const [showCommandPalette, setShowCommandPalette] = useState(true);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [searching, setSearching] = useState(false);
   const [data, setData] = useState(cmdkData.slice(0, 10));
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
 
   const filteredData = useMemo(() => {
-    return cmdkData.filter((item) =>
-      item.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    if(searchTerm.length === 0) return cmdkData.slice(0, 10);
+    return cmdkData.map((item) =>
+      {
+        const title = item.title;
+        const matchResult = fuzzy_match(title, searchTerm);
+        return matchResult.length > 0 ? {...item, matchResult} : null;
+      }
+    ).filter(item => item !== null);
   }, [searchTerm]);
 
   useEffect(() => {
     setSelectedItem(null);
   }, [filteredData]);
-
-  console.log(selectedItem);
 
   const handleKeyPress = useCallback(
     (event) => {
@@ -48,19 +52,19 @@ export function CMDKProvider({ children }) {
       }
       if (event.key === "Enter") {
         event.preventDefault();
-        if(selectedItem !== null) {
+        if (selectedItem !== null) {
           const obj = filteredData[selectedItem - 1];
-          console.log(obj);
-          if(obj) {
+          // console.log(obj);
+          if (obj) {
             const url = obj.url;
-            if(url) {
+            if (url) {
               window.open(url, "_blank");
             }
           }
         }
       }
     },
-    [filteredData, selectedItem]  
+    [filteredData, selectedItem]
   );
 
   useEffect(() => {
@@ -77,9 +81,9 @@ export function CMDKProvider({ children }) {
         behavior: "smooth",
         block: "nearest",
         inline: "end",
-      })
+      });
     }
-  }, [selectedItem])
+  }, [selectedItem]);
 
   const toggleCommandPalette = (state) => {
     setShowCommandPalette(state ?? !showCommandPalette);
@@ -100,18 +104,18 @@ export function CMDKProvider({ children }) {
   }
 
   async function search(e) {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setSearching(true);
-    if (e.target.value.length > 0) await wait(500);
+    if (e.target.value.length > 0) await wait(300);
     setSearchTerm(e.target.value);
     setSearching(false);
   }
 
   function handleItemSelection(e) {
     e.stopPropagation();
-    console.log(e.target);
+    // console.log(e.target);
     const id = e.target?.id;
-    if(id && Number(id) !== NaN) {
+    if (id && Number(id) !== NaN) {
       setSelectedItem(Number(id));
     }
   }
@@ -130,7 +134,7 @@ export function CMDKProvider({ children }) {
     filteredData,
     selectedItem,
     setSelectedItem,
-    handleItemSelection
+    handleItemSelection,
   };
 
   return <CMDKContext.Provider value={value}>{children}</CMDKContext.Provider>;

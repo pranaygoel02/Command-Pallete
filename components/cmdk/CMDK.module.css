@@ -19,6 +19,14 @@
   max-height: 50vh;
 }
 
+.cmdkContainer section::-webkit-scrollbar {
+  display: none;
+}
+
+.cmdkContainer section:hover::-webkit-scrollbar {
+  display: block;
+}
+
 .searchContainer {
   display: flex;
   align-items: center;
@@ -53,8 +61,25 @@
   border-radius: var(--border-radius);
   background-color: rgba(var(--callout-rgb), 0.5);
   cursor: pointer;
+  gap: 1rem;
+  color: rgba(var(--foreground-rgb), 0.5);
 }
 
 .itemSelected {
   background-color: rgba(var(--foreground-rgb), 0.2);
+  color: rgba(var(--foreground-rgb));
+}
+
+.itemTitle {
+  flex: 1;
+}
+
+.itemTitle > b {
+  font-weight: inherit;
+  color: rgba(var(--foreground-rgb));
+  text-decoration: underline;
+}
+
+.itemType {
+  text-transform: capitalize;
 }
