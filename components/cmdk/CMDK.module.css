@@ -16,19 +16,13 @@
   padding: 1rem;
   overflow: auto;
   transition: height 0.3s ease-in-out;
-  max-height: 50vh;
+  max-height: 55vh;
 }
 
 .cmdkContainer section::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-.cmdkContainer section::-webkit-scrollbar-track {
-  border-radius: 10px;
+  width: 6px;
 }
  
-/* Handle */
 .cmdkContainer section::-webkit-scrollbar-thumb {
   background: rgba(var(--foreground-rgb), 0.2);
   border-radius: 10px;

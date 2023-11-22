@@ -26,54 +26,62 @@ export function CMDKProvider({ children }) {
   console.log(flattedMenu);
 
   const filteredData = useMemo(() => {
-    let i = 0;
-    let tmpData = flattedMenu;
 
-    if (actionStack.length > 0) {
-      tmpData = flattedMenu.filter((item) => {
-        const isChildItem = (item.title.join(" / ") + " /").includes(actionStack.join(" / ") + " /");
-        return isChildItem;
-      }
-      );
-    }
+    let idCounter = 0;
+  
+    const isChildItem = (item, stack) =>
+      item.title.join(" / ").toLowerCase().includes((stack.join(" / ") + " /").toLowerCase());
+  
+    const isMatchingType = (item, searchTerm) => {
+      if (item.type === null) return item;
       
-
-    if (searchTerm.length === 0) {
-      tmpData = tmpData.filter(
-        (item) => item.title.length <= actionStack.length + 2
-      );
-    }
-    tmpData =
-      searchTerm.length === 0 && actionStack.length > 0
-        ? tmpData.filter((item) => item.title.length === actionStack.length + 1)
-        : tmpData;
-    if (searchTerm.length > 0) {
-      tmpData = tmpData
-        .map((item) => {
-          if (item.type === null) return item;
-          const title = item.title.join(" / ");
-          // const title = item.title[item.title.length - 1];
-          const matchResult = fuzzy_match(title, searchTerm);
-          return matchResult.length > 0
-            ? {
-                ...item,
-                matchResult: item.type === null ? undefined : matchResult,
-              }
-            : null;
-        })
-        .filter((item) => item !== null);
-    }
-
-    return tmpData
-      .map((item, index) => {
-        return item.type === null
-          ? !tmpData[index + 1]?.title.join("/").includes(item.title.join("/"))
+      const title = item.title[item.title.length - 1];
+      const matchResult = fuzzy_match(title, searchTerm);
+  
+      return matchResult.length > 0
+        ? { ...item, matchResult: matchResult }
+        : null;
+    };
+  
+    const filterByActionStack = (data) =>
+      data.filter((item) => isChildItem(item, actionStack));
+  
+    const filterByTitleLength = (data, length) =>
+      data.filter((item) => item.title.length <= length);
+  
+    const filterBySearchTerm = (data) =>
+      data.map((item) => isMatchingType(item, searchTerm)).filter(Boolean);
+  
+    const addIdToTypes = (data) =>
+      data.map((item, index) =>
+        item.type === null
+          ? !data[index + 1]?.title.join("/").includes(item.title.join("/"))
             ? null
             : item
-          : { ...item, id: ++i };
-      })
-      .filter((item) => item !== null);
+          : { ...item, id: ++idCounter }
+      ).filter(Boolean);
+  
+    let filteredData = flattedMenu;
+  
+    if (actionStack.length > 0) {
+      filteredData = filterByActionStack(filteredData);
+    }
+  
+    if (searchTerm.length === 0) {
+      filteredData = filterByTitleLength(filteredData, actionStack.length + 2);
+    }
+  
+    if (searchTerm.length === 0 && actionStack.length > 0) {
+      filteredData = filterByTitleLength(filteredData, actionStack.length + 1);
+    }
+  
+    if (searchTerm.length > 0) {
+      filteredData = filterBySearchTerm(filteredData);
+    }
+  
+    return addIdToTypes(filteredData);
   }, [searchTerm, actionStack]);
+  
 
   useEffect(() => {
     setSelectedItem(null);
