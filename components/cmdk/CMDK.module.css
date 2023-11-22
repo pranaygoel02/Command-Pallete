@@ -20,11 +20,18 @@
 }
 
 .cmdkContainer section::-webkit-scrollbar {
-  display: none;
+  width: 10px;
 }
 
-.cmdkContainer section:hover::-webkit-scrollbar {
-  display: block;
+/* Track */
+.cmdkContainer section::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+ 
+/* Handle */
+.cmdkContainer section::-webkit-scrollbar-thumb {
+  background: rgba(var(--foreground-rgb), 0.2);
+  border-radius: 10px;
 }
 
 .searchContainer {
@@ -62,7 +69,13 @@
   background-color: rgba(var(--callout-rgb), 0.5);
   cursor: pointer;
   gap: 1rem;
+  box-sizing: border-box;
   color: rgba(var(--foreground-rgb), 0.5);
+}
+
+.itemChild {
+  padding: 0rem;
+  padding-right: 1rem;
 }
 
 .itemSelected {
@@ -82,4 +95,16 @@
 
 .itemType {
   text-transform: capitalize;
+}
+
+.lines {
+  display: flex;
+  align-items: stretch;
+}
+
+.line {
+  width: 1px;
+  margin-left: 1.5rem;
+  height: 52px;
+  background-color: rgba(var(--foreground-rgb), 0.5);
 }

@@ -1,5 +1,6 @@
 "use client";
 import { useCMDK } from "context/cmdk.context.jsx";
+import Command from "./Command";
 
 function Search({styles}) {
 

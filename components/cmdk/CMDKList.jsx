@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 function CMDKList({data, closeCommandPalette}) {
   
   const router = useRouter();
-
+  
   function handleClick(e) {
     e.stopPropagation();
     const target = e.target;
