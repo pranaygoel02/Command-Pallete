@@ -11,6 +11,7 @@ import {
 import cmdkData, { newData } from "@/lib/cmdkData";
 import fuzzy_match from "@/lib/fuzzy";
 import flattenMenu from "@/lib/flattenMenu";
+import { fuzzySearch } from "@/lib/fuse";
 
 const CMDKContext = createContext();
 
@@ -26,66 +27,92 @@ export function CMDKProvider({ children }) {
   console.log(flattedMenu);
 
   const filteredData = useMemo(() => {
-
-    let idCounter = 0;
-  
-    const isChildItem = (item, stack) =>
-      item.title.join(" / ").toLowerCase().includes((stack.join(" / ") + " /").toLowerCase());
-  
-    const isMatchingType = (item, searchTerm) => {
-      if (item.type === null) return item;
-      
-      const title = item.title[item.title.length - 1];
-      const matchResult = fuzzy_match(title, searchTerm);
-  
-      return matchResult.length > 0
-        ? { ...item, matchResult: matchResult }
-        : null;
+    const isChildItem = (item, stack) => {
+      const titleString = item.title.join(" / ").toLowerCase();
+      const actionString = stack?.join(" / ").toLowerCase();
+      return titleString.includes(actionString);
     };
-  
-    const filterByActionStack = (data) =>
-      data.filter((item) => isChildItem(item, actionStack));
-  
-    const filterByTitleLength = (data, length) =>
-      data.filter((item) => item.title.length <= length);
-  
-    const filterBySearchTerm = (data) =>
-      data.map((item) => isMatchingType(item, searchTerm)).filter(Boolean);
-  
-    const addIdToTypes = (data) =>
-      data.map((item, index) =>
-        item.type === null
-          ? !data[index + 1]?.title.join("/").includes(item.title.join("/"))
-            ? null
-            : item
-          : { ...item, id: ++idCounter }
-      ).filter(Boolean);
-  
-    let filteredData = flattedMenu;
-  
-    if (actionStack.length > 0) {
-      filteredData = filterByActionStack(filteredData);
-    }
-  
-    if (searchTerm.length === 0) {
-      filteredData = filterByTitleLength(filteredData, actionStack.length + 2);
-    }
-  
-    if (searchTerm.length === 0 && actionStack.length > 0) {
-      filteredData = filterByTitleLength(filteredData, actionStack.length + 1);
-    }
-  
-    if (searchTerm.length > 0) {
-      filteredData = filterBySearchTerm(filteredData);
-    }
-  
-    return addIdToTypes(filteredData);
-  }, [searchTerm, actionStack]);
-  
 
-  useEffect(() => {
-    setSelectedItem(null);
-  }, [filteredData]);
+    // getting all child items of action menu
+    const getActionMenu = (actionStack, menu) => {
+      return menu
+        .map((item) => {
+          if (isChildItem(item, actionStack))
+            return { ...item, stack: item.title };
+          return null;
+        })
+        .filter((item) => item !== null);
+    };
+
+    const addIdToTypes = (data) => {
+      let idCounter = 0;
+      return data
+        .map((item, index) => {
+          if (data[index]?.type === null && data[index + 1]?.type === null)
+            return null;
+          return item.type === null
+            ? !data[index + 1]?.title
+                .join("/")
+                .toLowerCase()
+                .includes(item.title.join("/").toLowerCase())
+              ? null
+              : { ...item, level: item?.stack?.length - actionStack?.length - 1, title: item.title[item.title.length - 1] }
+            : {
+                ...item,
+                id: ++idCounter,
+                level: item?.stack?.length - actionStack?.length - 1,
+                title: item.title[item.title.length - 1],
+              };
+        })
+        .filter((item) => {
+          console.log('ITEM ',item);
+          return item !== null
+        });
+    };
+
+    let actionMenu = getActionMenu(actionStack, flattedMenu);
+
+    console.log("actionMenu", actionMenu);
+
+    if (searchTerm.length === 0) {
+      actionMenu = actionMenu.filter(
+        (item) =>
+          item.title.length - actionStack.length <= 2 &&
+          item.title.length - actionStack.length > 0
+      );
+    } else {
+      actionMenu = actionMenu
+        .map((item) => {
+          if (item.type === null)
+            return {
+              ...item,
+              matchResult: fuzzy_match(
+                item.title[item.title.length - 1],
+                searchTerm
+              ),
+            };
+          const titleString = item.title.join(" / ");
+          const matchResult = fuzzy_match(titleString, searchTerm);
+          if (matchResult.length > 0)
+            return {
+              ...item,
+              matchResult: ((matchResult) => {
+                let tmp = matchResult.split(" / ");
+                tmp = tmp[tmp.length - 1];
+                if (!tmp.includes("<b>")) tmp = fuzzy_match(tmp, searchTerm);
+                return tmp;
+              })(matchResult),
+            };
+          return null;
+        })
+        .filter((item) => item !== null);
+    }
+
+    console.log("actionMenu ", actionMenu);
+    actionMenu = addIdToTypes(actionMenu);
+    console.log(actionMenu);
+    return actionMenu;
+  }, [searchTerm, actionStack]);
 
   function handleSelection(event) {
     event.preventDefault();
@@ -96,7 +123,7 @@ export function CMDKProvider({ children }) {
         if (obj.url) {
           window.open(obj.url, "_blank");
         } else if (obj.type === "action") {
-          setActionStack((prev) => obj.title);
+          setActionStack((prev) => obj.stack);
         }
       }
     }
