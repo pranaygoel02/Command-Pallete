@@ -15,6 +15,7 @@
   position: relative;
   top: 17vh;
   min-width: 40vw;
+  max-width: 40vw;
   scroll-margin-bottom: 1rem;
 }
 

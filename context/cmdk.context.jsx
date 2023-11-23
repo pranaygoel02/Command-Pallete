@@ -8,10 +8,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import cmdkData, { newData } from "@/lib/cmdkData";
+import cmdkData, { newData, types } from "@/lib/cmdkData";
 import fuzzy_match from "@/lib/fuzzy";
 import flattenMenu from "@/lib/flattenMenu";
-import { fuzzySearch } from "@/lib/fuse";
 
 const CMDKContext = createContext();
 
@@ -22,6 +21,23 @@ export function CMDKProvider({ children }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [actionStack, setActionStack] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
+
+  function addSelectedType(name) {
+    setSelectedTypes((prev) => [...prev, name]);
+    console.log("added");
+  }
+
+  function removeSelectedType(name) {
+    setSelectedTypes((prev) => prev.filter((type) => type !== name));
+    console.log("removed");
+  }
+
+  function toggleTypeSelection(name) {
+    console.log(name, selectedTypes);
+    if (selectedTypes.includes(name)) removeSelectedType(name);
+    else addSelectedType(name);
+  }
 
   const flattedMenu = flattenMenu(newData);
   console.log(flattedMenu);
@@ -56,7 +72,11 @@ export function CMDKProvider({ children }) {
                 .toLowerCase()
                 .includes(item.title.join("/").toLowerCase())
               ? null
-              : { ...item, level: item?.stack?.length - actionStack?.length - 1, title: item.title[item.title.length - 1] }
+              : {
+                  ...item,
+                  level: item?.stack?.length - actionStack?.length - 1,
+                  title: item.title[item.title.length - 1],
+                }
             : {
                 ...item,
                 id: ++idCounter,
@@ -64,15 +84,10 @@ export function CMDKProvider({ children }) {
                 title: item.title[item.title.length - 1],
               };
         })
-        .filter((item) => {
-          console.log('ITEM ',item);
-          return item !== null
-        });
+        .filter((item) => item !== null);
     };
 
     let actionMenu = getActionMenu(actionStack, flattedMenu);
-
-    console.log("actionMenu", actionMenu);
 
     if (searchTerm.length === 0) {
       actionMenu = actionMenu.filter(
@@ -109,10 +124,15 @@ export function CMDKProvider({ children }) {
     }
 
     console.log("actionMenu ", actionMenu);
+    actionMenu = actionMenu.filter((item) => {
+      if (selectedTypes.length === 0) return true;
+      if (item.type === null) return true;
+      return selectedTypes.includes(item.type);
+    });
     actionMenu = addIdToTypes(actionMenu);
     console.log(actionMenu);
     return actionMenu;
-  }, [searchTerm, actionStack]);
+  }, [searchTerm, actionStack, selectedTypes]);
 
   function handleSelection(event) {
     event.preventDefault();
@@ -234,6 +254,11 @@ export function CMDKProvider({ children }) {
     actionStack,
     searchTerm,
     setSearchTerm,
+    types,
+    selectedTypes,
+    addSelectedType,
+    removeSelectedType,
+    toggleTypeSelection,
   };
 
   return <CMDKContext.Provider value={value}>{children}</CMDKContext.Provider>;

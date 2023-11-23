@@ -16,7 +16,12 @@
   padding: 1rem;
   overflow: auto;
   transition: height 0.3s ease-in-out;
-  max-height: 55vh;
+  max-height: 55vh;   
+  min-height: 100%;
+}
+
+.borderTop {
+  font-size: 0.95rem;
 }
 
 .cmdkContainer section::-webkit-scrollbar {
@@ -38,7 +43,9 @@
   padding: 1rem;
 }
 
-.searchContainer::-webkit-scrollbar {
+.typesContainer::-webkit-scrollbar,
+.searchContainer::-webkit-scrollbar
+{
   display: none;
 }
 
@@ -64,7 +71,7 @@
   cursor: pointer;
   gap: 1rem;
   box-sizing: border-box;
-  color: rgba(var(--foreground-rgb), 0.5);
+  color: rgba(var(--foreground-rgb), 0.8);
 }
 
 .itemChild {
@@ -73,8 +80,12 @@
 }
 
 .itemSelected {
-  background-color: rgba(var(--foreground-rgb), 0.2);
-  color: rgba(var(--foreground-rgb));
+  background-color: rgba(var(--foreground-rgb), 0.2) !important;
+  color: rgba(var(--foreground-rgb)) !important;
+}
+
+.actionStack {
+  white-space: nowrap;
 }
 
 .itemTitle {
@@ -97,8 +108,36 @@
 }
 
 .line {
+  position: relative;
   width: 1px;
   margin-left: 1.5rem;
   height: 52px;
   background-color: rgba(var(--foreground-rgb), 0.5);
+}
+
+.line::after {
+  position: absolute;
+  content: "";
+  width: 0.7  rem;
+  height: 1px;
+  background-color: rgba(var(--foreground-rgb), 0.5);
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.typesContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+  flex-wrap: nowrap;
+  padding-bottom: 1rem;
+}
+
+.typeSelected {
+  color: rgba(var(--foreground-rgb));
+  border-color: rgba(255, 255, 255, 0.841) !important;
 }

@@ -6,6 +6,7 @@ import { CgSpinner } from "react-icons/cg";
 import { FiSearch } from "react-icons/fi";
 import CMDKList from "./CMDKList";
 import Command from "./Command";
+import TypesList from "./TypesList";
 
 function CMDK() {
   const {
@@ -18,8 +19,6 @@ function CMDK() {
     actionStack
   } = useCMDK();
 
-  console.log(actionStack);
-
   return (
     <Modal show={showCommandPalette} onCloseModal={closeCommandPalette}>
       <div className={styles.cmdkContainer}>
@@ -29,9 +28,9 @@ function CMDK() {
           ) : (
             <CgSpinner className={searching ? "animate-spin" : ""} />
           )}
-          {
-            actionStack && actionStack.length > 0 && <span>{actionStack.join(' / ')} /</span>
-          }
+          {actionStack && actionStack.length > 0 && (
+            <span className={styles.actionStack}>{actionStack.join(" / ")} /</span>
+          )}
           <input
             id="cmdk-search"
             onChange={handleSearch}
@@ -40,12 +39,13 @@ function CMDK() {
             autoComplete="off"
             className={styles.cmdkInput}
           />
-          <Command onClick={closeCommandPalette} cmd={'ESC'} />
+          <Command onClick={closeCommandPalette} cmd={{name: "ESC"}} />
         </div>
         <section
           onMouseMove={handleItemSelection}
-          style={{ height: `${Math.max(filteredData.length * 52 + 32, 60)}px` }}
-        >
+          style={{ height: `${Math.max(filteredData.length * 52 + 84, 105)}px` }}
+          >
+          <TypesList />
           <CMDKList
             data={filteredData}
             closeCommandPalette={closeCommandPalette}
