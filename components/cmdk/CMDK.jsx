@@ -4,6 +4,8 @@ import Modal from "../modal/Modal";
 import styles from "./CMDK.module.css";
 import { CgSpinner } from "react-icons/cg";
 import { FiSearch } from "react-icons/fi";
+import { AiOutlineEnter } from "react-icons/ai";
+import { FaArrowDown, FaArrowUp } from "react-icons/fa6";
 import CMDKList from "./CMDKList";
 import Command from "./Command";
 import TypesList from "./TypesList";
@@ -19,10 +21,15 @@ function CMDK() {
     actionStack
   } = useCMDK();
 
+  const minLevel = filteredData.reduce((acc, item) => {
+    if (item.level < acc) return item.level;
+    return acc;
+  }, filteredData[0]?.level);
+
   return (
     <Modal show={showCommandPalette} onCloseModal={closeCommandPalette}>
       <div className={styles.cmdkContainer}>
-        <div className={styles.searchContainer}>
+        <section className={styles.searchContainer}>
           {!searching ? (
             <FiSearch />
           ) : (
@@ -40,16 +47,28 @@ function CMDK() {
             className={styles.cmdkInput}
           />
           <Command onClick={closeCommandPalette} cmd={{name: "ESC"}} />
-        </div>
+        </section>
+        <TypesList />
         <section
           onMouseMove={handleItemSelection}
           style={{ height: `${Math.max(filteredData.length * 52 + 84, 105)}px` }}
           >
-          <TypesList />
           <CMDKList
             data={filteredData}
             closeCommandPalette={closeCommandPalette}
+            minLevel={minLevel}
           />
+        </section>
+        <section className={styles.navigationControl}>
+          <div className="inline-flex">
+            <Command onClick={closeCommandPalette} cmd={{icon: <FaArrowUp />}} />
+            <Command onClick={closeCommandPalette} cmd={{icon: <FaArrowDown />}} />
+            to navigate
+          </div>
+          <div className="inline-flex">
+            <Command onClick={closeCommandPalette} cmd={{icon: <AiOutlineEnter />}} />
+            to select
+          </div>
         </section>
       </div>
     </Modal>

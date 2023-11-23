@@ -4,7 +4,7 @@ import Search from '@/components/cmdk/Search';
 
 
 export default function Home() {
-  console.log('styles', styles);
+  //console.log('styles', styles);
   return (
     <main className={styles.main}>
       <div className={styles.description}>

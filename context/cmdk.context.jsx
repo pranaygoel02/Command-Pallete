@@ -25,22 +25,22 @@ export function CMDKProvider({ children }) {
 
   function addSelectedType(name) {
     setSelectedTypes((prev) => [...prev, name]);
-    console.log("added");
+    //console.log("added");
   }
 
   function removeSelectedType(name) {
     setSelectedTypes((prev) => prev.filter((type) => type !== name));
-    console.log("removed");
+    //console.log("removed");
   }
 
   function toggleTypeSelection(name) {
-    console.log(name, selectedTypes);
+    //console.log(name, selectedTypes);
     if (selectedTypes.includes(name)) removeSelectedType(name);
     else addSelectedType(name);
   }
 
   const flattedMenu = flattenMenu(newData);
-  console.log(flattedMenu);
+  //console.log(flattedMenu);
 
   const filteredData = useMemo(() => {
     const isChildItem = (item, stack) => {
@@ -87,6 +87,15 @@ export function CMDKProvider({ children }) {
         .filter((item) => item !== null);
     };
 
+    function filterByMatchScore(data, percent = 80) {
+      return data.filter((item) => {
+        if(item.type === null) return true;
+        const splittedArray = item?.matchResult?.split("<b>")
+        console.log(splittedArray);
+        return splittedArray?.length >= percent / 100 * searchTerm.length}
+      )
+     }
+
     let actionMenu = getActionMenu(actionStack, flattedMenu);
 
     if (searchTerm.length === 0) {
@@ -121,17 +130,19 @@ export function CMDKProvider({ children }) {
           return null;
         })
         .filter((item) => item !== null);
-    }
-
-    console.log("actionMenu ", actionMenu);
+      }
+    
     actionMenu = actionMenu.filter((item) => {
       if (selectedTypes.length === 0) return true;
       if (item.type === null) return true;
       return selectedTypes.includes(item.type);
     });
-    actionMenu = addIdToTypes(actionMenu);
-    console.log(actionMenu);
-    return actionMenu;
+    if(searchTerm.length > 0) {
+      let tmp = filterByMatchScore(actionMenu)
+      if(tmp.filter(item => item.type !== null).length === 0) tmp = filterByMatchScore(actionMenu, 20)
+      actionMenu = tmp;
+    };
+    return addIdToTypes(actionMenu);
   }, [searchTerm, actionStack, selectedTypes]);
 
   function handleSelection(event) {
@@ -228,7 +239,7 @@ export function CMDKProvider({ children }) {
 
   function handleItemSelection(e) {
     e.stopPropagation();
-    // console.log(e.target);
+    // //console.log(e.target);
     const id = e.target?.id;
     if (id && Number(id) !== NaN) {
       setSelectedItem(Number(id));

@@ -8,7 +8,7 @@ function TypesList() {
 
     const { toggleTypeSelection, selectedTypes, types } = useCMDK();
 
-    console.log('TYPES', types);
+    //console.log('TYPES', types);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -31,11 +31,11 @@ function TypesList() {
   if(types.length <= 1) return null;
     return (
     types.length > 1 && (
-        <div ref={containerRef} className={styles.typesContainer}>
+        <section ref={containerRef} className={styles.typesContainer}>
           {types.map((type, i) => (
             <Command onClick={() => toggleTypeSelection(type.name)} key={i} cmd={type} style={selectedTypes.includes(type.name) ? styles.itemSelected : null} />
           ))}
-        </div>
+        </section>
       )
   )
 }

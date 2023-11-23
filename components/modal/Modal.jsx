@@ -5,7 +5,7 @@ import styles from "./Modal.module.css";
 function Modal({ children, show, onCloseModal }) {
   
   function closeModal(e) {
-    console.log(e.target);
+    //console.log(e.target);
     e.stopPropagation();
     if(e.target.id === 'modal-backdrop') {
       onCloseModal();

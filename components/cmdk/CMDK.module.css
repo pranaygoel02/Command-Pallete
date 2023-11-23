@@ -16,12 +16,15 @@
   padding: 1rem;
   overflow: auto;
   transition: height 0.3s ease-in-out;
-  max-height: 55vh;   
-  min-height: 100%;
+  max-height: 40vh;   
 }
 
-.borderTop {
+.groupTitle {
   font-size: 0.95rem;
+}
+
+.groupTitle:first-child {
+  padding-top: 0;
 }
 
 .cmdkContainer section::-webkit-scrollbar {
@@ -71,11 +74,12 @@
   cursor: pointer;
   gap: 1rem;
   box-sizing: border-box;
-  color: rgba(var(--foreground-rgb), 0.8);
+  color: rgba(var(--foreground-rgb), 0.7);
 }
 
 .itemChild {
   padding: 0rem;
+  /* padding-block: 0; */
   padding-right: 1rem;
 }
 
@@ -140,4 +144,13 @@
 .typeSelected {
   color: rgba(var(--foreground-rgb));
   border-color: rgba(255, 255, 255, 0.841) !important;
+}
+
+.navigationControl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem;
+  border-top: 1px solid rgba(var(--callout-border-rgb), 0.3);
 }
