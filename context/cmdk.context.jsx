@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import cmdkData, { newData, types, realData } from "@/lib/cmdkData";
+import { types, realData } from "@/lib/cmdkData";
 import fuzzy_match from "@/lib/fuzzy";
 import flattenMenu from "@/lib/flattenMenu";
 
@@ -17,7 +17,7 @@ const CMDKContext = createContext();
 export function CMDKProvider({ children }) {
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [searching, setSearching] = useState(false);
-  const [data, setData] = useState(cmdkData.slice(0, 10));
+  const [data, setData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [actionStack, setActionStack] = useState([]);
@@ -36,7 +36,24 @@ export function CMDKProvider({ children }) {
     else addSelectedType(name);
   }
 
-  const flattedMenu = flattenMenu(realData);
+  console.log('REAL_DATA ', realData);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch("http://localhost:8080/cmdk");
+        const data = await response.json();
+        setData(data);
+      }
+      catch(err) {
+        console.log(err);
+      }
+    }
+
+    fetchData()
+  },[])
+  
+  const flattedMenu = useMemo(() => flattenMenu(data), [data]);
   
   const filteredData = useMemo(() => {
     const isChildItem = (item, stack) => {
@@ -139,7 +156,7 @@ export function CMDKProvider({ children }) {
       actionMenu = tmp;
     };
     return addIdToTypes(actionMenu);
-  }, [searchTerm, actionStack, selectedTypes]);
+  }, [searchTerm, actionStack, selectedTypes, flattedMenu]);
 
   function handleSelection(event) {
     event.preventDefault();

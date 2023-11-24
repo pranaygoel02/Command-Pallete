@@ -1,13 +1,23 @@
 "use client";
 import { useCMDK } from "context/cmdk.context.jsx";
-import Command from "./Command";
+import Loader from "../ui/Loader";
 
-function Search({styles}) {
+function Search({ styles }) {
+  const { toggleCommandPalette, filteredData } = useCMDK();
 
-    const { showCommandPalette, toggleCommandPalette } = useCMDK();
+  if (filteredData.length === 0)
+    return (
+      <div className={`${styles.box} inline-flex`}>
+        <Loader loading={filteredData.length === 0} /> Hang on! Getting the CMDK
+        ready
+      </div>
+    );
 
   return (
-    <div onClick={toggleCommandPalette} className={`${styles.box} ${styles.searchbox}`}>
+    <div
+      onClick={toggleCommandPalette}
+      className={`${styles.box} ${styles.searchbox}`}
+    >
       Search...
       <span className={`${styles.box} ${styles.cmdk}`}>Ctrl + K</span>
     </div>

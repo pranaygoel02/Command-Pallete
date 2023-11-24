@@ -129,17 +129,6 @@ input:focus {
   outline: none;
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
-  transform-origin: center;
-}
-
-@keyframes spin {
-  to {
-    rotate: 360deg;
-  }
-}
-
 button {
   display: flex;
   align-items: center;

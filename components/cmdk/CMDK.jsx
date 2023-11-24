@@ -10,6 +10,7 @@ import CMDKList from "./CMDKList";
 import Command from "./Command";
 import TypesList from "./TypesList";
 import { AnimatePresence } from "framer-motion";
+import Loader from "../ui/Loader";
 
 function CMDK() {
   const {
@@ -32,7 +33,7 @@ function CMDK() {
           {!searching ? (
             <FiSearch />
           ) : (
-            <CgSpinner className={searching ? "animate-spin" : ""} />
+            <Loader loading={searching} />
           )}
           {actionStack && actionStack.length > 0 && (
             <>

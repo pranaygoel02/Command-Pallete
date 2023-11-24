@@ -1,6 +1,7 @@
 import { useCMDK } from "@/context/cmdk.context";
 import styles from "./CMDK.module.css";
 import Command from "./Command";
+import { ICON_MAP } from "@/lib/cmdkData";
 
 function CMDKItem({
   title,
@@ -39,7 +40,7 @@ function CMDKItem({
           ))}
         </div>
       )}
-      {icon}
+      {ICON_MAP[icon]}
       <span
         className={styles.itemTitle}
         dangerouslySetInnerHTML={{
