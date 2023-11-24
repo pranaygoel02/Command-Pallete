@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef } from "react";
 import styles from "./CMDK.module.css";
-import { useCMDK } from "@/context/cmdk.context";
+import { useCMDK } from "@/context/cmdk2.context";
 import Command from "./Command";
 
 function TypesList() {

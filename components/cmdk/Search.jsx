@@ -1,5 +1,5 @@
 "use client";
-import { useCMDK } from "context/cmdk.context.jsx";
+import { useCMDK } from "context/cmdk2.context.jsx";
 import Loader from "../ui/Loader";
 
 function Search({ styles }) {

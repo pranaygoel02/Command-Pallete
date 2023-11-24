@@ -1,4 +1,4 @@
-import { useCMDK } from "@/context/cmdk.context";
+import { useCMDK } from "@/context/cmdk2.context";
 import styles from "./CMDK.module.css";
 import Command from "./Command";
 import { ICON_MAP } from "@/lib/cmdkData";
@@ -16,7 +16,7 @@ function CMDKItem({
   stack,
   cmd,
 }) {
-  const { selectedItem, handleSelection, actionStack, searchTerm } = useCMDK();
+  const { selectedItem, handleSelection, actionStack } = useCMDK();
   
   const isSelected = selectedItem === id;
   level = stack.length - (actionStack.length <= 1 ? 0 : actionStack.length) - 1;

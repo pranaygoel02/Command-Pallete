@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { CMDKProvider } from "@/context/cmdk.context";
+import { CMDKProvider } from "@/context/cmdk2.context";
 import CMDK from "@/components/cmdk/CMDK";
 
 const inter = Inter({ subsets: ["latin"] });

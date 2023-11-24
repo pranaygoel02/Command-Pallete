@@ -1,5 +1,5 @@
 "use client";
-import { useCMDK } from "context/cmdk.context.jsx";
+import { useCMDK } from "context/cmdk2.context.jsx";
 import Modal from "../modal/Modal";
 import styles from "./CMDK.module.css";
 import { CgSpinner } from "react-icons/cg";
