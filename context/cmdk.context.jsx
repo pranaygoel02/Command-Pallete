@@ -37,8 +37,6 @@ export function CMDKProvider({ children }) {
     else addSelectedType(name);
   }
 
-  console.log('REAL_DATA ', realData);
-
   useEffect(() => {
     async function fetchData() {
       try {
@@ -184,6 +182,9 @@ export function CMDKProvider({ children }) {
     if(commands.length > 0) {
       listeners = commands.map(command => {
         return window.addEventListener("keydown", (event) => {
+          const isInputOrTextarea = event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA";
+          if(!isInputOrTextarea)
+            event.preventDefault();
           let keyCombinationPressed = []
           const isAlt = event.altKey;
           if(isAlt) keyCombinationPressed.push('Alt')
@@ -308,7 +309,6 @@ export function CMDKProvider({ children }) {
 
   function handleItemSelection(e) {
     e.stopPropagation();
-    // //console.log(e.target);
     const id = e.target?.id;
     if (id && Number(id) !== NaN) {
       setSelectedItem(Number(id));
