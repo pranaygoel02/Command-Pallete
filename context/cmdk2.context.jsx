@@ -210,7 +210,8 @@ export function CMDKProvider({ children }) {
         openCommandPalette();
       }
       if (event.key === "Escape") {
-        closeCommandPalette();
+        if(actionStack.length > 0) dispatch({ type: "SET_ACTION_STACK", payload: [] });
+        else closeCommandPalette();
       }
       if (event.key === "Backspace") {
         if (searchTerm.length === 0 && actionStack.length > 0)
