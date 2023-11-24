@@ -48,6 +48,7 @@
   background: rgba(0,0,0,0.4);
   text-transform: capitalize;
   white-space: nowrap;
+  min-width: 32px;
 }
 
 .code {

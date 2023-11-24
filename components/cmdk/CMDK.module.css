@@ -81,6 +81,10 @@
   font-size: 1.2rem;
 }
 
+.hasCmd {
+  padding-block: 0.56rem;
+}
+
 .itemChild {
   padding: 0rem;
   /* padding-block: 0; */

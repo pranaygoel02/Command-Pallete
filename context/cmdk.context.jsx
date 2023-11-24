@@ -22,6 +22,7 @@ export function CMDKProvider({ children }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [actionStack, setActionStack] = useState([]);
   const [selectedTypes, setSelectedTypes] = useState([]);
+  const [commands, setCommands] = useState([]);
 
   function addSelectedType(name) {
     setSelectedTypes((prev) => [...prev, name]);
@@ -172,6 +173,61 @@ export function CMDKProvider({ children }) {
       }
     }
   }
+
+  useEffect(() => {
+    setCommands(filteredData.filter(item => item?.cmd?.onKeyPress !== undefined))
+  },[filteredData])
+
+  useEffect(() => {
+    console.log('COMMANDS ', commands);
+    let listeners
+    if(commands.length > 0) {
+      listeners = commands.map(command => {
+        return window.addEventListener("keydown", (event) => {
+          let keyCombinationPressed = []
+          const isAlt = event.altKey;
+          if(isAlt) keyCombinationPressed.push('Alt')
+          const isCtrl = event.ctrlKey;
+          if(isCtrl) keyCombinationPressed.push('Ctrl')
+          const isShift = event.shiftKey;
+          if(isShift) keyCombinationPressed.push('Shift')
+          const isMeta = event.metaKey;
+          if(isMeta) keyCombinationPressed.push('Meta')
+          const key = event.key;
+          if(key !== 'Alt' && key !== 'Ctrl' && key !== 'Shift' && key !== 'Meta')
+            keyCombinationPressed.push(key)
+          const keyCombination = keyCombinationPressed.join('+')
+          if(keyCombination.toLowerCase() === command.cmd.name.toLowerCase()) {
+            const actionToPerform = command.cmd.onKeyPress
+            switch(actionToPerform) {
+              case 'openCommandPalette':
+                openCommandPalette()
+                break;
+              case 'closeCommandPalette':
+                closeCommandPalette()
+                break;
+              case 'toggleCommandPalette':
+                toggleCommandPalette()
+                break;
+              case 'push_to_action_stack':
+                openCommandPalette()
+                setActionStack((prev) => command.stack)
+                break;
+              default:
+                break;
+            }
+          }
+        })
+      })
+    }
+    return () => {
+      if(listeners) {
+        listeners.forEach(listener => {
+          window.removeEventListener("keydown", listener)
+        })
+      }
+    }
+  },[commands])
 
   const handleKeyPress = useCallback(
     (event) => {
