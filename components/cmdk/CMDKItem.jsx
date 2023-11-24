@@ -1,14 +1,27 @@
 import { useCMDK } from "@/context/cmdk.context";
 import styles from "./CMDK.module.css";
+import Command from "./Command";
 
-function CMDKItem({ title, url, index, type, icon, matchResult, id, level, stack }) {
+function CMDKItem({
+  title,
+  url,
+  index,
+  type,
+  icon,
+  matchResult,
+  id,
+  level,
+  stack,
+  cmd,
+}) {
   const { selectedItem, handleSelection, actionStack, searchTerm } = useCMDK();
 
   const isSelected = selectedItem === id;
-  
-  console.log(level, stack.length, actionStack.length, "ref - ", stack.length - (actionStack.length <= 1 ? 0 : actionStack.length) - 1, title);
-  level = stack.length - (actionStack.length <= 1 ? 0 : actionStack.length) - 1
-  
+
+  level = stack.length - (actionStack.length <= 1 ? 0 : actionStack.length) - 1;
+
+  console.log(cmd);
+
   return (
     <li
       title={title}
@@ -33,7 +46,11 @@ function CMDKItem({ title, url, index, type, icon, matchResult, id, level, stack
           __html: matchResult || title,
         }}
       ></span>
-      <span className={styles.itemType}>{type}</span>
+      {type && type !== "action" && <span className={styles.itemType}>{type}</span>}
+      {cmd && <Command cmd={cmd} />}
+      
+      {/* // TODO: implement new features like custom actions */} 
+      
     </li>
   );
 }

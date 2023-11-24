@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import cmdkData, { newData, types } from "@/lib/cmdkData";
+import cmdkData, { newData, types, realData } from "@/lib/cmdkData";
 import fuzzy_match from "@/lib/fuzzy";
 import flattenMenu from "@/lib/flattenMenu";
 
@@ -25,23 +25,19 @@ export function CMDKProvider({ children }) {
 
   function addSelectedType(name) {
     setSelectedTypes((prev) => [...prev, name]);
-    //console.log("added");
   }
 
   function removeSelectedType(name) {
     setSelectedTypes((prev) => prev.filter((type) => type !== name));
-    //console.log("removed");
   }
 
   function toggleTypeSelection(name) {
-    //console.log(name, selectedTypes);
     if (selectedTypes.includes(name)) removeSelectedType(name);
     else addSelectedType(name);
   }
 
-  const flattedMenu = flattenMenu(newData);
-  //console.log(flattedMenu);
-
+  const flattedMenu = flattenMenu(realData);
+  
   const filteredData = useMemo(() => {
     const isChildItem = (item, stack) => {
       const titleString = item.title.join(" / ").toLowerCase();

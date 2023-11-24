@@ -9,6 +9,7 @@ import { FaArrowDown, FaArrowUp } from "react-icons/fa6";
 import CMDKList from "./CMDKList";
 import Command from "./Command";
 import TypesList from "./TypesList";
+import { AnimatePresence } from "framer-motion";
 
 function CMDK() {
   const {
@@ -21,12 +22,10 @@ function CMDK() {
     actionStack
   } = useCMDK();
 
-  const minLevel = filteredData.reduce((acc, item) => {
-    if (item.level < acc) return item.level;
-    return acc;
-  }, filteredData[0]?.level);
+  console.log(filteredData);
 
   return (
+    <AnimatePresence>
     <Modal show={showCommandPalette} onCloseModal={closeCommandPalette}>
       <div className={styles.cmdkContainer}>
         <section className={styles.searchContainer}>
@@ -36,7 +35,10 @@ function CMDK() {
             <CgSpinner className={searching ? "animate-spin" : ""} />
           )}
           {actionStack && actionStack.length > 0 && (
-            <span className={styles.actionStack}>{actionStack.join(" / ")} /</span>
+            <>
+            <span className={styles.actionStack}>{actionStack[actionStack.length - 1]}</span>
+            <span>/</span>
+            </>
           )}
           <input
             id="cmdk-search"
@@ -56,7 +58,6 @@ function CMDK() {
           <CMDKList
             data={filteredData}
             closeCommandPalette={closeCommandPalette}
-            minLevel={minLevel}
           />
         </section>
         <section className={styles.navigationControl}>
@@ -72,6 +73,7 @@ function CMDK() {
         </section>
       </div>
     </Modal>
+    </AnimatePresence>
   );
 }
 

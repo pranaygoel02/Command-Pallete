@@ -77,6 +77,10 @@
   color: rgba(var(--foreground-rgb), 0.7);
 }
 
+.item > svg {
+  font-size: 1.2rem;
+}
+
 .itemChild {
   padding: 0rem;
   /* padding-block: 0; */
@@ -90,6 +94,9 @@
 
 .actionStack {
   white-space: nowrap;
+  max-width: 30ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .itemTitle {
