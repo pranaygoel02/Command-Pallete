@@ -19,8 +19,8 @@ function CMDKItem({
   const { selectedItem, handleSelection, actionStack } = useCMDK();
   
   const isSelected = selectedItem === id;
-  level = stack.length - (actionStack.length <= 1 ? 0 : actionStack.length) - 1;
-  const hasCmd = cmd?.name?.split("+").length > 0;
+  level = stack?.length - (actionStack.length <= 1 ? 0 : actionStack.length) - 1;
+  const hasCmd = cmd?.key?.split("+").length > 0;
 
   return (
     <li
@@ -55,8 +55,8 @@ function CMDKItem({
       )}
       {cmd && (
         <div className="inline-flex">
-          {cmd?.name?.split("+").map((key, i) => (
-            <Command key={i} cmd={{ icon: keys[key], name: key }} />
+          {cmd?.key?.split("+").map((key, i) => (
+            <Command key={i} cmd={{ icon: keys[key], key }} />
           ))}
         </div>
       )}

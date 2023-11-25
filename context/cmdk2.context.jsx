@@ -15,6 +15,7 @@ import { addIdToCmdkResult } from "@/lib/addIdToCmdkResult";
 import { getCmdkMenuListByActionStack } from "@/lib/getCmdkMenuListByActionStack";
 import { filterCmdkResultByType } from "@/lib/filterCmdkResultByType";
 import { searchCmdkMatchingResults } from "@/lib/searchCmdkMatchingResults";
+import { cmdkDefaultCommands } from "@/lib/commands";
 
 const CMDKContext = createContext();
 
@@ -27,6 +28,7 @@ const initialState = {
   actionStack: [],
   selectedTypes: [],
   commands: [],
+  showAllCommands: false,
 };
 
 function reducer(state, action) {
@@ -36,9 +38,16 @@ function reducer(state, action) {
     case "SET_SHOW_COMMAND_PALETTE":
       return { ...state, showCommandPalette: action.payload };
     case "OPEN_COMMAND_PALLETE":
-        return { ...state, showCommandPalette: true };
+      return { ...state, showCommandPalette: true };
     case "CLOSE_COMMAND_PALLETE":
-        return { ...state, showCommandPalette: false, actionStack: [], searchTerm: "", selectedItem: null, selectedTypes: [] };
+      return {
+        ...state,
+        showCommandPalette: false,
+        actionStack: [],
+        searchTerm: "",
+        selectedItem: null,
+        selectedTypes: [],
+      };
     case "SET_SEARCHING":
       return { ...state, searching: action.payload };
     case "SET_SEARCH_TERM":
@@ -51,25 +60,38 @@ function reducer(state, action) {
       return { ...state, selectedTypes: action.payload };
     case "SET_COMMANDS":
       return { ...state, commands: action.payload };
+    case "SET_SHOW_ALL_COMMANDS":
+      return { ...state, showAllCommands: action.payload };
     default:
       return state;
   }
 }
 
 export function CMDKProvider({ children }) {
-  
-  
-    const [state, dispatch] = useReducer(reducer, initialState);
-    
-    const {showCommandPalette, searching, data, searchTerm, selectedItem, actionStack, selectedTypes, commands} = state;
-    console.log(state);
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const {
+    showCommandPalette,
+    searching,
+    data,
+    searchTerm,
+    selectedItem,
+    actionStack,
+    selectedTypes,
+    commands,
+    showAllCommands,
+  } = state;
+  console.log(state);
 
   function addSelectedType(name) {
-    dispatch({ type: "SET_SELECTED_TYPES", payload: [...selectedTypes, name] })
+    dispatch({ type: "SET_SELECTED_TYPES", payload: [...selectedTypes, name] });
   }
 
   function removeSelectedType(name) {
-    dispatch({ type: "SET_SELECTED_TYPES", payload: selectedTypes.filter((type) => type !== name) })
+    dispatch({
+      type: "SET_SELECTED_TYPES",
+      payload: selectedTypes.filter((type) => type !== name),
+    });
   }
 
   function toggleTypeSelection(name) {
@@ -94,7 +116,6 @@ export function CMDKProvider({ children }) {
   const flattedMenu = useMemo(() => flattenMenu(data), [data]);
 
   const filteredData = useMemo(() => {
-
     let actionMenu = getCmdkMenuListByActionStack(actionStack, flattedMenu);
 
     if (searchTerm.length === 0) {
@@ -110,7 +131,7 @@ export function CMDKProvider({ children }) {
     actionMenu = filterCmdkResultByType(actionMenu, selectedTypes);
 
     if (searchTerm.length > 0) {
-        /* 
+      /* 
         default threshold is 80% match, causing more results to be filtered out due to nesting of menu items
         but if no results are found, then we try with a lower threshold of 20% match, i.e, more results are shown
         */
@@ -125,109 +146,113 @@ export function CMDKProvider({ children }) {
   function handleSelection(event) {
     event.preventDefault();
     event.stopPropagation();
-    if (selectedItem !== null) {
+    if (selectedItem !== null && !showAllCommands) {
       const obj = filteredData.find((item) => item.id === selectedItem);
       if (obj) {
         if (obj.url) {
           window.open(obj.url, "_blank");
         } else if (obj.type === "action") {
-            dispatch({ type: "SET_ACTION_STACK", payload: obj.stack });
+          dispatch({ type: "SET_ACTION_STACK", payload: obj.stack });
         }
       }
     }
   }
 
   useEffect(() => {
-    dispatch({type: "SET_COMMANDS", payload: filteredData.filter((item) => item?.cmd?.onKeyPress !== undefined)})
+    dispatch({
+      type: "SET_COMMANDS",
+      payload: filteredData.filter(
+        (item) => item?.cmd?.onKeyPress !== undefined
+      ),
+    });
   }, [filteredData]);
 
-  
-  // attaching keypress event listeners on commands with onKeyPress property retrieved from data
-  useEffect(() => {
-    let listeners;
-    if (commands.length > 0) {
-      listeners = commands.map((command) => {
-        return window.addEventListener("keydown", (event) => {
-          const isInputOrTextarea =
-            event.target.tagName === "INPUT" ||
-            event.target.tagName === "TEXTAREA";
-          if (!isInputOrTextarea) event.preventDefault();
-          let keyCombinationPressed = [];
-          const isAlt = event.altKey;
-          if (isAlt) keyCombinationPressed.push("Alt");
-          const isCtrl = event.ctrlKey;
-          if (isCtrl) keyCombinationPressed.push("Ctrl");
-          const isShift = event.shiftKey;
-          if (isShift) keyCombinationPressed.push("Shift");
-          const isMeta = event.metaKey;
-          if (isMeta) keyCombinationPressed.push("Meta");
-          const key = event.key;
-          if (
-            key !== "Alt" &&
-            key !== "Ctrl" &&
-            key !== "Shift" &&
-            key !== "Meta"
-          )
-            keyCombinationPressed.push(key);
-          const keyCombination = keyCombinationPressed.join("+");
-          if (keyCombination.toLowerCase() === command.cmd.name.toLowerCase()) {
-            const actionToPerform = command.cmd.onKeyPress;
-            switch (actionToPerform) {
-              case "openCommandPalette":
-                openCommandPalette();
-                break;
-              case "closeCommandPalette":
-                closeCommandPalette();
-                break;
-              case "toggleCommandPalette":
-                toggleCommandPalette();
-                break;
-              case "push_to_action_stack":
-                openCommandPalette();
-                dispatch({ type: "SET_ACTION_STACK", payload: command.stack });
-                break;
-              default:
-                break;
-            }
-          }
-        });
-      });
-    }
-    return () => {
-      if (listeners) {
-        listeners.forEach((listener) => {
-          window.removeEventListener("keydown", listener);
-        });
-      }
-    };
-  }, [commands]);
-
+ 
   // attaching default keypress event listeners
   const handleKeyPress = useCallback(
     (event) => {
-      if (event.ctrlKey && event.key === "k") {
-        event.preventDefault();
-        openCommandPalette();
+      const allCommands = [...cmdkDefaultCommands, ...commands];
+
+      const isInputOrTextarea =
+        event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA";
+      let keyCombinationPressed = [];
+      const isAlt = event.altKey;
+      if (isAlt) keyCombinationPressed.push("Alt");
+      const isCtrl = event.ctrlKey;
+      if (isCtrl) keyCombinationPressed.push("Ctrl");
+      const isShift = event.shiftKey;
+      if (isShift) keyCombinationPressed.push("Shift");
+      const isMeta = event.metaKey;
+      if (isMeta) keyCombinationPressed.push("Meta");
+      const key = event.key;
+      console.log("KEY", key);
+      if (
+        key !== "Alt" &&
+        key !== "Ctrl" &&
+        key !== "Shift" &&
+        key !== "Meta"
+      ) {
+        keyCombinationPressed.push(key);
       }
-      if (event.key === "Escape") {
-        if(actionStack.length > 0) dispatch({ type: "SET_ACTION_STACK", payload: [] });
-        else closeCommandPalette();
-      }
-      if (event.key === "Backspace") {
-        if (searchTerm.length === 0 && actionStack.length > 0)
-            dispatch({ type: "SET_ACTION_STACK", payload: actionStack.slice(0, actionStack.length - 1) });
-      }
-      if (event.key === "ArrowDown") {
-        dispatch({type: "SET_SELECTED_ITEM", payload: Math.min(selectedItem + 1, filteredData.filter((item) => item.type !== null).length)})
-      }
-      if (event.key === "ArrowUp") {
-        dispatch({type: "SET_SELECTED_ITEM", payload: Math.max(selectedItem - 1, 0)})
-      }
-      if (event.key === "Enter") {
-        handleSelection(event);
+      const keyCombination = keyCombinationPressed.join("+");
+      const matchingCommand = allCommands.find((command) => {
+        return (
+          command?.cmd?.key?.toLowerCase() === keyCombination.toLowerCase()
+        );
+      });
+
+      
+      if (matchingCommand) {
+        if(matchingCommand.cmd.key !== "Backspace")
+            event.preventDefault();
+        const actionToPerform = matchingCommand.cmd.onKeyPress;
+        switch (actionToPerform) {
+          case "open_command_palette":
+            openCommandPalette();
+            break;
+          case "select_menu_item":
+            handleSelection(event);
+            break;
+          case "navigate_up":
+            dispatch({
+              type: "SET_SELECTED_ITEM",
+              payload: Math.max(selectedItem - 1, 0),
+            });
+            break;
+          case "navigate_down":
+            dispatch({
+              type: "SET_SELECTED_ITEM",
+              payload: Math.min(
+                selectedItem + 1,
+                filteredData.filter((item) => item.type !== null).length
+              ),
+            });
+            break;
+          case "navigate_back":
+            if (searchTerm.length === 0 && actionStack.length > 0)
+              dispatch({
+                type: "SET_ACTION_STACK",
+                payload: actionStack.slice(0, actionStack.length - 1),
+              });
+            break;
+          case "navigate_top_or_exit":
+            if (actionStack.length > 0)
+              dispatch({ type: "SET_ACTION_STACK", payload: [] });
+            else closeCommandPalette();
+            break;
+          case "push_to_action_stack":
+            openCommandPalette();
+            dispatch({
+              type: "SET_ACTION_STACK",
+              payload: matchingCommand.stack,
+            });
+            break;
+          default:
+            break;
+        }
       }
     },
-    [filteredData, selectedItem]
+    [filteredData, selectedItem, cmdkDefaultCommands, commands]
   );
 
   useEffect(() => {
@@ -249,15 +274,18 @@ export function CMDKProvider({ children }) {
   }, [selectedItem]);
 
   const toggleCommandPalette = (state) => {
-    dispatch({type: "SET_SHOW_COMMAND_PALETTE", payload: state ?? !showCommandPalette})
+    dispatch({
+      type: "SET_SHOW_COMMAND_PALETTE",
+      payload: state ?? !showCommandPalette,
+    });
   };
 
   const openCommandPalette = () => {
-    dispatch({type: "OPEN_COMMAND_PALLETE"})
+    dispatch({ type: "OPEN_COMMAND_PALLETE" });
   };
 
   const closeCommandPalette = () => {
-    dispatch({type: "CLOSE_COMMAND_PALLETE"})
+    dispatch({ type: "CLOSE_COMMAND_PALLETE" });
   };
 
   async function wait(ms) {
@@ -267,22 +295,38 @@ export function CMDKProvider({ children }) {
   }
 
   async function search(e) {
-    dispatch({type: "SET_SEARCHING", payload: true})
-    if (e.target.value.length > 0) await wait(300);
-    dispatch({type: "SET_SEARCH_TERM", payload: e.target.value})
-    dispatch({type: "SET_SELECTED_ITEM", payload: null})
-    dispatch({type: "SET_SEARCHING", payload: false})
+    dispatch({ type: "SET_SEARCHING", payload: true });
+    let value = e.target.value;
+    if (value.length > 0) await wait(300);
+    if (value.length === 1 && value === "/" && actionStack.length === 0) {
+      dispatch({ type: "SET_SHOW_ALL_COMMANDS", payload: true });
+    } else {
+      dispatch({ type: "SET_SHOW_ALL_COMMANDS", payload: false });
+    }
+    if (value.length > 1 && value.includes("/")) {
+      const tmp = value.split("/").map((item) => item.trim());
+      const newValue = tmp[tmp.length - 1];
+      value = newValue;
+      dispatch({
+        type: "SET_ACTION_STACK",
+        payload: tmp.slice(0, tmp.length - 1),
+      });
+    }
+    dispatch({ type: "SET_SEARCH_TERM", payload: value });
+    document.getElementById("cmdk-search").value = value;
+    dispatch({ type: "SET_SELECTED_ITEM", payload: null });
+    dispatch({ type: "SET_SEARCHING", payload: false });
   }
 
   function handleItemSelection(e) {
     e.stopPropagation();
     const id = e.target?.id;
     if (id && Number(id) !== NaN) {
-        dispatch({type: "SET_SELECTED_ITEM", payload: Number(id)})
+      dispatch({ type: "SET_SELECTED_ITEM", payload: Number(id) });
     }
   }
 
-  const handleSearch = useCallback(useDebounce(search, 300), []);
+  const handleSearch = useCallback(useDebounce(search, 500), []);
 
   const value = {
     showCommandPalette,
@@ -304,7 +348,7 @@ export function CMDKProvider({ children }) {
     removeSelectedType,
     toggleTypeSelection,
     ...state,
-    dispatch
+    dispatch,
   };
 
   return <CMDKContext.Provider value={value}>{children}</CMDKContext.Provider>;
