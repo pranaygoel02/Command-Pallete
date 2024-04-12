@@ -52,7 +52,7 @@ export function CMDKProvider({ children }) {
     useEffect(() => {
       async function fetchData() {
         try {
-          const response = await fetch("http://localhost:8080/cmdk");
+          const response = await fetch(`${NEXT_PUBLIC_API_URL}/cmdk`);
           const data = await response.json();
           dispatch({ type: actions.SET_DATA, payload: data });
         } catch (err) {
